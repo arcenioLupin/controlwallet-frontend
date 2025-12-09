@@ -2,6 +2,10 @@ import { Box, Button, Chip, FormControl, FormHelperText, InputLabel, MenuItem, O
 import { Controller } from "react-hook-form";
 import { useEffect } from "react";
 import useConfiguration from "@/hooks/useConfiguration";
+import { enqueueSnackbar } from "notistack";
+
+const MAX_IMAGE_SIZE_MB = 3; // límite frontend (más estricto que el backend de 5MB)
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 const ConfigurationForm = () => {
   const { fetchConfig, control, handleSubmit, errors, isSubmitting, onSubmit, paymentMethodOptions } =
@@ -10,6 +14,17 @@ const ConfigurationForm = () => {
   useEffect(() => {
     fetchConfig();
   }, []);
+
+  const validateImageSize = (file: File) => {
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      enqueueSnackbar(
+        `La imagen es demasiado pesada. El tamaño máximo permitido es de ${MAX_IMAGE_SIZE_MB} MB. ` +
+        `Por favor, elige una imagen más ligera.`, { variant: 'error' }
+      );
+      return false;
+    }
+    return true;
+  };
 
   return (
     <Box sx={{ p: 4 }}>
@@ -49,7 +64,6 @@ const ConfigurationForm = () => {
           )}
         />
 
-
         <FormControl
           fullWidth
           margin="normal"
@@ -69,7 +83,6 @@ const ConfigurationForm = () => {
                 labelId="payments-method-label"
                 multiple
                 input={<OutlinedInput label="Métodos de pago aceptados" />}
-                // aseguramos que siempre sea array
                 value={field.value || []}
                 onChange={(event) => {
                   const value = event.target.value as string[];
@@ -85,7 +98,7 @@ const ConfigurationForm = () => {
                       const label = option?.label ?? value;
 
                       const handleDelete = (e: React.MouseEvent) => {
-                        e.stopPropagation(); // evitar que se abra el menú
+                        e.stopPropagation();
                         const newValue = (field.value || []).filter(
                           (m: string) => m !== value
                         );
@@ -97,7 +110,7 @@ const ConfigurationForm = () => {
                           key={value}
                           label={label}
                           size="small"
-                          onMouseDown={(e) => e.stopPropagation()} // no abrir el select al hacer click en la X
+                          onMouseDown={(e) => e.stopPropagation()}
                           onDelete={handleDelete}
                         />
                       );
@@ -121,8 +134,6 @@ const ConfigurationForm = () => {
           )}
         </FormControl>
 
-
-
         {/* QR de Yape */}
         <Controller
           name="walletQrImageYape"
@@ -136,9 +147,18 @@ const ConfigurationForm = () => {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
+
+                  // 🔍 Validar tamaño antes de leer
+                  const isValid = validateImageSize(file);
+                  if (!isValid) {
+                    // Limpiar input por si el usuario quiere volver a elegir
+                    e.target.value = "";
+                    return;
+                  }
+
                   const reader = new FileReader();
                   reader.onloadend = () => {
-                    field.onChange(reader.result?.toString() || '');
+                    field.onChange(reader.result?.toString() || "");
                   };
                   reader.readAsDataURL(file);
                 }}
@@ -148,7 +168,7 @@ const ConfigurationForm = () => {
                   <img
                     src={field.value}
                     alt="QR Yape"
-                    style={{ maxWidth: '150px', borderRadius: '8px' }}
+                    style={{ maxWidth: "150px", borderRadius: "8px" }}
                   />
                 </Box>
               )}
@@ -169,9 +189,17 @@ const ConfigurationForm = () => {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
+
+                  // 🔍 Validar tamaño antes de leer
+                  const isValid = validateImageSize(file);
+                  if (!isValid) {
+                    e.target.value = "";
+                    return;
+                  }
+
                   const reader = new FileReader();
                   reader.onloadend = () => {
-                    field.onChange(reader.result?.toString() || '');
+                    field.onChange(reader.result?.toString() || "");
                   };
                   reader.readAsDataURL(file);
                 }}
@@ -181,14 +209,13 @@ const ConfigurationForm = () => {
                   <img
                     src={field.value}
                     alt="QR Plin"
-                    style={{ maxWidth: '150px', borderRadius: '8px' }}
+                    style={{ maxWidth: "150px", borderRadius: "8px" }}
                   />
                 </Box>
               )}
             </>
           )}
         />
-
 
         <Box mt={2} display="flex" justifyContent="center">
           <Button type="submit" variant="contained" disabled={isSubmitting}>
@@ -201,3 +228,4 @@ const ConfigurationForm = () => {
 };
 
 export default ConfigurationForm;
+
