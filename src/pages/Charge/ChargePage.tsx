@@ -50,7 +50,11 @@ const ChargePage = () => {
   );
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box       
+        sx={{
+          px: { xs: 0, md: 4 },   // 👈 menos padding lateral en móvil
+          py: { xs: 2, md: 4 },
+      }}>
       <Typography variant="subtitle1">
         Aquí puedes revisar y gestionar tus cobros.
       </Typography>

@@ -149,7 +149,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          pt: 3,
+          pb: 3,
+          pl: { xs: 2, md: 3},
+          pr: { xs: 2, md: 3 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           backgroundColor: '#f5f5f5',
           minHeight: '100vh',

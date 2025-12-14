@@ -74,8 +74,8 @@ const DashboardPage = () => {
   return (
     <Box
       sx={{
-        px: { xs: 1.5, md: 2 },
-        py: 2,
+          px: { xs: 0, md: 4 },   // 👈 menos padding lateral en móvil
+          py: { xs: 2, md: 4 },
         overflowX: 'hidden',      // <- corta cualquier desborde
         maxWidth: 1280,
         mx: 'auto',
