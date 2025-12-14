@@ -55,7 +55,12 @@ const PaymentRequestsPage = () => {
 
   return (
     <>
-      <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <Box       
+        sx={{
+          px: { xs: 0, md: 4 },   // 👈 menos padding lateral en móvil
+          py: { xs: 2, md: 4 },
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           Solicitudes de Pago
         </Typography>

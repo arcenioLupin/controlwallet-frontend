@@ -43,7 +43,7 @@ const ChargeCard = ({ charge, onEdit, onDelete }: ChargeCardProps) => {
   };
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: '12px', mb: 2 }}>
+    <Card variant="outlined" sx={{ borderRadius: '12px', mb: 0 }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
